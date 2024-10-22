@@ -5,6 +5,6 @@ break(5min) and counts your pomodoro sessions.
 # Usage
 just run " python pomodoro.py " in terminal
 # Showcase
-![alt text](image.png)![alt text](image-1.png)
+![alt text](image-2.png)
 ## Author
 Furkan Sarsilmaz
