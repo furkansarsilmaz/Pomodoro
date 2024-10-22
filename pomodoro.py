@@ -1,73 +1,77 @@
 from tkinter import *
 from tkinter import messagebox
+class Pomodoro:
+    def __init__(self,root):
+        self.root = root
+        self.root.geometry("300x200")
+        self.root.title("Pomodoro")
+        self.root.configure(background="gray")        
+        self.short_break = 300  
+        self.long_break =  900 
+        self.pomodoro_duration = 1500 
+        self.pomodoro_count = 0
+        self.count_id = None
+        self.time_left = self.pomodoro_duration
+        self.on_break = False
 
-root = Tk()
-root.geometry("300x200")
-root.title("Pomodoro")
-short_break = 300
-long_break = 900
-pomodoro_duration = 1500
-pomodoro_count = 0
-count_id = None
-time_left = pomodoro_duration
-on_break = False
+        self.time_label = Label(root, text="",width=30, height=2)
+        self.time_label.pack(pady=5)
+
+        self.pomodoro_label = Label(root,text=self.pomodoro_count,height=2,width=20)
+        self.pomodoro_label.pack(pady=5)
+
+        self.start_button = Button(root, text="Start", command=lambda: self.count_function(self.pomodoro_duration), width=7, height=1)
+        self.start_button.pack(pady=5)
+        
+        self.stop_button = Button(root, text="Stop", command=self.stop_function, width=7, height=1)
+        self.stop_button.pack(pady=5)
+
+        self.continue_button = Button(root, text="Continue", command=self.continue_function, width=7, height=1)
+        self.continue_button.pack(pady=5)
+
+    def count_function(self,time):
+        self.time_left = time
+        time_minute = time // 60
+        time_second = time % 60
+        self.time_label.config(text=f"{time_minute:02d}:{time_second:02d}")
+
+        if time > 0:
+            self.count_id = self.time_label.after(1000, self.count_function, time - 1)
+            self.time_left = time
+
+        elif time == 0:
+            if self.on_break:
+                messagebox.showinfo("Pomodoro", "Time to get back to work!")
+                self.on_break = False
+                self.count_function(self.pomodoro_duration)
+
+            else:
+                self.pomodoro_count += 1
+                self.update_function(self.pomodoro_count)
+                if self.pomodoro_count % 4 == 0:  
+                    messagebox.showinfo("Long Break", "Long break time!")
+                    self.on_break = True
+                    self.count_function(self.long_break)
+                else:  
+                    messagebox.showinfo("Short Break", "Short break time!")
+                    self.on_break = True
+                    self.count_function(self.short_break)    
+
+    def stop_function(self):
+        if self.count_id:
+            self.time_label.after_cancel(self.count_id)
+            self.count_id = None
 
 
+    def continue_function(self):
+        self.count_function(self.time_left)
 
-def count_function(time):
-    global count_id, time_left, pomodoro_count, on_break
+    def update_function(self,pomodoro_count):
+        self.pomodoro_label.config(text=f"Pomodoro count : {pomodoro_count}")
 
-    time_minute = time // 60
-    time_second = time % 60
-    time_label.config(text=f"{time_minute:02d}:{time_second:02d}")
-    
-    if time > 0:
-        count_id = time_label.after(1000, count_function, time - 1)
-        time_left = time
-
-    elif time == 0:
-        if on_break:
-            messagebox.showinfo("Pomodoro", "Time to get back to work!")
-            on_break = False
-            count_function(pomodoro_duration)
-
-        else:
-            pomodoro_count += 1
-            update_function(pomodoro_count)
-            if pomodoro_count % 4 == 0:  
-                messagebox.showinfo("Long Break", "Long break time!")
-                on_break = True
-                count_function(long_break)
-            else:  
-                messagebox.showinfo("Short Break", "Short break time!")
-                on_break = True
-                count_function(short_break)
-
-
-def stop_function():
-    global count_id
-    if count_id:
-        time_label.after_cancel(count_id)
-
-
-def continue_function():
-    global time_left
-    count_function(time_left)
-
-def update_function(pomodoro_count):
-    pomodoro_label.config(text=f"Pomodoro count : {pomodoro_count}")
-
-
-time_label = Label(root, text="", bg="blue", fg="white", width=30, height=2)
-time_label.pack()
-
-pomodoro_label = Label(root,text=pomodoro_count,height=2,width=20)
-pomodoro_label.pack()
-
-start_button = Button(root, text="Start", command=lambda: count_function(pomodoro_duration), width=7, height=1).pack(pady=10)
-stop_button = Button(root, text="Stop", command=stop_function, width=7, height=1).pack(pady=10)
-continue_button = Button(root, text="Continue", command=continue_function, width=7, height=1).pack(pady=5)
 
 
 if __name__ == "__main__":
+    root = Tk()
+    Pomodoro(root)
     root.mainloop()
