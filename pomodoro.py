@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
+from StopButton import *
+
 class Pomodoro:
     def __init__(self,root):
         self.root = root
@@ -23,7 +25,8 @@ class Pomodoro:
         self.start_button = Button(root, text="Start", command=lambda: self.count_function(self.pomodoro_duration), width=7, height=1)
         self.start_button.pack(pady=5)
         
-        self.stop_button = Button(root, text="Stop", command=self.stop_function, width=7, height=1)
+        self.StopButton = Stopbutton(self.time_label)
+        self.stop_button = Button(root, text="Stop", command= lambda: self.StopButton.stop_function(self.count_id), width=7, height=1)
         self.stop_button.pack(pady=5)
 
         self.continue_button = Button(root, text="Continue", command=self.continue_function, width=7, height=1)
@@ -56,12 +59,6 @@ class Pomodoro:
                     messagebox.showinfo("Short Break", "Short break time!")
                     self.on_break = True
                     self.count_function(self.short_break)    
-
-    def stop_function(self):
-        if self.count_id:
-            self.time_label.after_cancel(self.count_id)
-            self.count_id = None
-
 
     def continue_function(self):
         self.count_function(self.time_left)
